@@ -51,7 +51,9 @@
     }
   ],
   "users": {},
-  "gameState": "waiting",
-  "currentQuestionIndex": null,
-  "phaseStartTime": null
+  "gameState": "finished",
+  "currentQuestionIndex": 3,
+  "phaseStartTime": 1783516121958,
+  "questionDuration": 20,
+  "revealDuration": 5
 }

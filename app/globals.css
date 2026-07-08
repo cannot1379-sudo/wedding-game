@@ -1,23 +1,28 @@
 :root {
-  --primary: #FF7EB3;
-  --secondary: #FF758C;
-  --bg-color: #fdfbfb;
-  --text-color: #333333;
+  --primary: #FF8BA7; /* Cute warm pink */
+  --secondary: #FFC2D1; /* Soft pastel pink */
+  --accent: #BDE0FE; /* Pastel blue for badminton vibes */
+  --bg-color: #FFF0F3;
+  --text-color: #5D5D5D;
   --text-light: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.9);
-  --glass-border: rgba(255, 255, 255, 0.3);
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(255, 194, 209, 0.6);
+  --shadow: 0 12px 40px rgba(255, 139, 167, 0.25);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Nunito', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg-color) 0%, #ebedee 100%);
+  background-color: var(--bg-color);
+  /* Cute polka dot pattern to make it lively */
+  background-image: radial-gradient(var(--secondary) 2px, transparent 2px), radial-gradient(var(--accent) 2px, transparent 2px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
   color: var(--text-color);
   min-height: 100vh;
   /* Safe Area for mobile */
@@ -32,69 +37,87 @@ body {
 /* Glassmorphism Card Utilities */
 .glass-card {
   background: var(--card-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 2rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 2.5rem;
   box-shadow: var(--shadow);
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add a cute top border accent to the card */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(to right, var(--primary), var(--accent));
 }
 
 /* Typography */
 h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 800;
   text-align: center;
   margin-bottom: 1.5rem;
-  background: linear-gradient(to right, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
+  text-shadow: 2px 2px 0px #fff;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   margin-bottom: 1rem;
+  color: var(--primary);
+  font-weight: 700;
 }
 
 /* Forms and Buttons */
 .input-field {
   width: 100%;
-  padding: 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  padding: 1.2rem;
+  border: 2px solid #FFE5EC;
+  border-radius: 16px;
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
   outline: none;
+  background: #FAFAFA;
 }
 
 .input-field:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--secondary);
+  background: #FFF;
 }
 
 .btn-primary {
   width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  padding: 1.2rem;
+  background: linear-gradient(135deg, var(--primary) 0%, #FF9EBB 100%);
   color: var(--text-light);
   border: none;
-  border-radius: 12px;
-  font-size: 1.2rem;
-  font-weight: 600;
+  border-radius: 16px;
+  font-size: 1.3rem;
+  font-weight: 800;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 6px 20px rgba(255, 139, 167, 0.4);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(255, 139, 167, 0.5);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: translateY(2px) scale(0.98);
 }
 
 /* Layout Utilities */
@@ -103,15 +126,15 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
+  justify-content: flex-start;
+  padding: 3rem 1.5rem 1.5rem 1.5rem;
 }
 
 /* Options Grid (Fluid) */
 .options-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 1.2rem;
   width: 100%;
 }
 
@@ -123,26 +146,31 @@ h2 {
 
 .option-card {
   padding: 1.5rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 16px;
+  border: 3px solid #FFE5EC;
+  border-radius: 20px;
   text-align: center;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   background: white;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: var(--text-color);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
 }
 
 .option-card:hover {
-  border-color: var(--primary);
-  background: #fff0f3;
+  border-color: var(--accent);
+  background: #F8FBFF;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(189, 224, 254, 0.4);
 }
 
 .option-card.selected {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #A2D2FF 100%);
   color: white;
   border-color: transparent;
-  transform: scale(1.02);
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(162, 210, 255, 0.5);
 }
 
 /* QR Code Container */
@@ -153,4 +181,18 @@ h2 {
   display: inline-block;
   margin-bottom: 2rem;
   box-shadow: var(--shadow);
+}
+
+@keyframes badminton-bounce {
+  0% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  100% {
+    transform: translateY(-8px) rotate(6deg);
+  }
+}
+
+.badminton-bounce {
+  animation: badminton-bounce 0.6s ease-in-out infinite alternate;
+  display: inline-block;
 }

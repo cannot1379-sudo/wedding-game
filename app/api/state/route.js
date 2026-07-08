@@ -19,7 +19,9 @@ async function fetchState() {
       currentQuestionIndex: null,
       phaseStartTime: null,
       questions: [],
-      users: {}
+      users: {},
+      questionDuration: 60,
+      revealDuration: 10
     };
     await setDoc(docRef, defaultState);
     return defaultState;
@@ -39,16 +41,18 @@ async function saveState(data) {
 function processGameState(dbState) {
   const now = Date.now();
   let changed = false;
+  const qDuration = (dbState.questionDuration || 60) * 1000;
+  const rDuration = (dbState.revealDuration || 10) * 1000;
   if (dbState.gameState === 'active') {
     const elapsed = now - dbState.phaseStartTime;
-    if (elapsed >= 60000) {
+    if (elapsed >= qDuration) {
       dbState.gameState = 'reveal';
       dbState.phaseStartTime = now;
       changed = true;
     }
   } else if (dbState.gameState === 'reveal') {
     const elapsed = now - dbState.phaseStartTime;
-    if (elapsed >= 10000) {
+    if (elapsed >= rDuration) {
       const nextIndex = dbState.currentQuestionIndex + 1;
       if (nextIndex < dbState.questions.length) {
         dbState.gameState = 'active';
@@ -110,6 +114,9 @@ export async function POST(request) {
       }
     } else if (action === 'admin_update_questions') {
       dbState.questions = payload.questions;
+    } else if (action === 'update_settings') {
+      dbState.questionDuration = Number(payload.questionDuration);
+      dbState.revealDuration = Number(payload.revealDuration);
     } else if (action === 'register_user') {
       if (!dbState.users[payload.userId]) {
         dbState.users[payload.userId] = { id: payload.userId, name: payload.name, score: 0, answered: [] };

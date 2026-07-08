@@ -21,24 +21,27 @@ export default function Home() {
     router.push("/game");
   };
 
-  if (loading) return <div className="container"><p>載入中...</p></div>;
+  if (loading) return <div className="container"><p>載入中... 🏸</p></div>;
 
   return (
-    <main className="container">
+    <main className="container" style={{ justifyContent: 'center' }}>
       <div className="glass-card">
-        <h1>歡迎參加我們的婚禮</h1>
-        <p style={{ textAlign: 'center', marginBottom: '2rem' }}>請輸入您的姓名以進入問答遊戲</p>
+        <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>🏸💒💖</div>
+        <h1>歡迎來到我們的婚禮</h1>
+        <p style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '1.1rem', color: 'var(--text-color)' }}>
+          請輸入您的姓名，準備好跟我們一起玩羽球問答遊戲了嗎？✨
+        </p>
         <form onSubmit={handleLogin}>
           <input
             type="text"
             className="input-field"
-            placeholder="請輸入您的真實姓名"
+            placeholder="🎀 請輸入您的真實姓名 🎀"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
           <button type="submit" className="btn-primary">
-            模擬 LINE 登入 (本地測試)
+            進入遊戲 (模擬 LINE 登入) 🚀
           </button>
         </form>
       </div>

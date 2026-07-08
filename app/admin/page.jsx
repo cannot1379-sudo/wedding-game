@@ -16,13 +16,24 @@ export default function AdminPage() {
   const [points, setPoints] = useState(10);
 
   const [timeLeft, setTimeLeft] = useState(0);
+  const [qDurationInput, setQDurationInput] = useState(60);
+  const [rDurationInput, setRDurationInput] = useState(10);
+
+  useEffect(() => {
+    if (state) {
+      if (state.questionDuration !== undefined) setQDurationInput(state.questionDuration);
+      if (state.revealDuration !== undefined) setRDurationInput(state.revealDuration);
+    }
+  }, [state?.questionDuration, state?.revealDuration]);
 
   useEffect(() => {
     if (!state || !state.phaseStartTime) return;
     const interval = setInterval(() => {
       const now = Date.now();
       const elapsed = now - state.phaseStartTime;
-      const duration = state.gameState === 'active' ? 60000 : state.gameState === 'reveal' ? 10000 : 0;
+      const qDuration = (state.questionDuration || 60) * 1000;
+      const rDuration = (state.revealDuration || 10) * 1000;
+      const duration = state.gameState === 'active' ? qDuration : state.gameState === 'reveal' ? rDuration : 0;
       setTimeLeft(Math.max(0, Math.ceil((duration - elapsed) / 1000)));
     }, 500);
     return () => clearInterval(interval);
@@ -76,6 +87,38 @@ export default function AdminPage() {
           <button className="btn-primary" onClick={stopGame} disabled={state.gameState === 'waiting'} style={{ flex: 1, background: state.gameState === 'waiting' ? '#ccc' : '#6c757d' }}>強制停止</button>
           <button className="btn-primary" onClick={resetGame} style={{ flex: 1, background: '#dc3545' }}>重置遊戲</button>
           <button className="btn-primary" onClick={() => router.push('/leaderboard')} style={{ flex: 1 }}>大螢幕</button>
+        </div>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', padding: '0.8rem', background: '#fff0f3', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <label style={{ fontWeight: 'bold', marginRight: '0.5rem', fontSize: '0.95rem' }}>⏱️ 每題答題時間 (秒)：</label>
+            <input 
+              type="number" 
+              className="input-field" 
+              min="5" 
+              value={qDurationInput} 
+              onChange={e => {
+                const val = Number(e.target.value);
+                setQDurationInput(val);
+                dispatch('update_settings', { questionDuration: val, revealDuration: rDurationInput });
+              }} 
+              style={{ width: '85px', margin: 0, padding: '0.5rem', border: '2px solid var(--secondary)', borderRadius: '8px' }} 
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <label style={{ fontWeight: 'bold', marginRight: '0.5rem', fontSize: '0.95rem' }}>📢 答案公布時間 (秒)：</label>
+            <input 
+              type="number" 
+              className="input-field" 
+              min="3" 
+              value={rDurationInput} 
+              onChange={e => {
+                const val = Number(e.target.value);
+                setRDurationInput(val);
+                dispatch('update_settings', { questionDuration: qDurationInput, revealDuration: val });
+              }} 
+              style={{ width: '85px', margin: 0, padding: '0.5rem', border: '2px solid var(--secondary)', borderRadius: '8px' }} 
+            />
+          </div>
         </div>
         <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
           <p style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>目前狀態：<strong>{getStatusText()}</strong></p>
