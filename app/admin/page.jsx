@@ -61,6 +61,13 @@ export default function AdminPage() {
     setNewText(""); setOpt1(""); setOpt2(""); setOpt3(""); setOpt4("");
   };
 
+  const deleteQuestion = (id) => {
+    if (confirm('確定要刪除這題嗎？')) {
+      const newQuestions = state.questions.filter(q => q.id !== id);
+      dispatch('admin_update_questions', { questions: newQuestions });
+    }
+  };
+
   const resetGame = () => {
     if(confirm('確定要重置所有積分與遊戲進度嗎？')) {
       dispatch('reset', {});
@@ -151,8 +158,14 @@ export default function AdminPage() {
       <div className="glass-card" style={{ maxWidth: '100%' }}>
         <h2>題目列表 (共 {state.questions.length} 題)</h2>
         {state.questions.map((q, idx) => (
-          <div key={q.id} style={{ border: '2px solid #e2e8f0', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', opacity: state.currentQuestionIndex === idx ? 1 : 0.6 }}>
-            <h3 style={{ marginBottom: '1rem' }}>{idx + 1}. {q.text} ({q.points} 分)</h3>
+          <div key={q.id} style={{ border: '2px solid #e2e8f0', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', opacity: state.currentQuestionIndex === idx ? 1 : 0.6, position: 'relative' }}>
+            <button 
+              onClick={() => deleteQuestion(q.id)} 
+              disabled={state.gameState !== 'waiting'}
+              style={{ position: 'absolute', right: '1rem', top: '1rem', background: state.gameState !== 'waiting' ? '#ccc' : '#dc3545', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: state.gameState !== 'waiting' ? 'not-allowed' : 'pointer' }}>
+              刪除
+            </button>
+            <h3 style={{ marginBottom: '1rem', paddingRight: '4rem' }}>{idx + 1}. {q.text} ({q.points} 分)</h3>
             <ul style={{ paddingLeft: '1.5rem', marginBottom: '0.5rem' }}>
               {q.options.map((o, i) => (
                 <li key={i} style={{ color: i === q.answer ? '#28a745' : 'inherit', fontWeight: i === q.answer ? 'bold' : 'normal', marginBottom: '0.5rem' }}>
