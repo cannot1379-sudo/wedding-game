@@ -24,7 +24,34 @@
       ],
       "answer": 1,
       "points": 10
+    },
+    {
+      "id": "q1783489049558",
+      "text": "1",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": 2,
+      "points": 10
+    },
+    {
+      "id": "q1783489060913",
+      "text": "2",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": 2,
+      "points": 10
     }
   ],
-  "users": {}
+  "users": {},
+  "gameState": "waiting",
+  "currentQuestionIndex": null,
+  "phaseStartTime": null
 }
