@@ -50,15 +50,17 @@ export default function AdminPage() {
 
   const addQuestion = (e) => {
     e.preventDefault();
+    const validOptions = [opt1, opt2, opt3, opt4].filter(Boolean);
     const newQ = {
       id: `q${Date.now()}`,
       text: newText,
-      options: [opt1, opt2, opt3, opt4].filter(Boolean),
-      answer: Number(ans),
+      options: validOptions,
+      answer: Number(ans) >= validOptions.length ? 0 : Number(ans),
       points: Number(points)
     };
     dispatch('admin_update_questions', { questions: [...state.questions, newQ] });
     setNewText(""); setOpt1(""); setOpt2(""); setOpt3(""); setOpt4("");
+    setAns(0);
   };
 
   const deleteQuestion = (id) => {
@@ -146,8 +148,12 @@ export default function AdminPage() {
             <input className="input-field" placeholder="選項 4" value={opt4} onChange={e=>setOpt4(e.target.value)} />
           </div>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <label>正確解答 (索引 0 起)：</label>
-            <input type="number" className="input-field" min="0" max="3" value={ans} onChange={e=>setAns(e.target.value)} style={{ width: '80px', margin: 0 }} />
+            <label>正確解答：</label>
+            <select className="input-field" value={ans} onChange={e=>setAns(e.target.value)} style={{ width: 'auto', minWidth: '150px', margin: 0 }}>
+              {[opt1, opt2, opt3, opt4].filter(Boolean).map((opt, idx) => (
+                <option key={idx} value={idx}>{`選項 ${idx + 1} (${opt})`}</option>
+              ))}
+            </select>
             <label>設定積分：</label>
             <input type="number" className="input-field" min="1" value={points} onChange={e=>setPoints(e.target.value)} style={{ width: '80px', margin: 0 }} />
           </div>
