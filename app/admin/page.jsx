@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/lib/useStore';
 import { useRouter } from 'next/navigation';
 
@@ -15,15 +15,27 @@ export default function AdminPage() {
   const [ans, setAns] = useState(0);
   const [points, setPoints] = useState(10);
 
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  useEffect(() => {
+    if (!state || !state.phaseStartTime) return;
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - state.phaseStartTime;
+      const duration = state.gameState === 'active' ? 60000 : state.gameState === 'reveal' ? 10000 : 0;
+      setTimeLeft(Math.max(0, Math.ceil((duration - elapsed) / 1000)));
+    }, 500);
+    return () => clearInterval(interval);
+  }, [state]);
+
   if (!state) return <div className="container"><p>載入中...</p></div>;
 
-  const pushQuestion = (id) => {
-    dispatch('set_question', { questionId: id });
+  const startGame = () => {
+    if(state.questions.length === 0) return alert('請先新增題目');
+    dispatch('start_game', {});
   };
 
-  const stopQuestion = () => {
-    dispatch('set_question', { questionId: null });
-  };
+  const stopGame = () => dispatch('stop_game', {});
 
   const addQuestion = (e) => {
     e.preventDefault();
@@ -42,22 +54,35 @@ export default function AdminPage() {
     if(confirm('確定要重置所有積分與遊戲進度嗎？')) {
       dispatch('reset', {});
     }
-  }
+  };
+
+  const getStatusText = () => {
+    if (state.gameState === 'waiting') return '等待開始';
+    if (state.gameState === 'finished') return '遊戲結束 (顯示最終成績)';
+    const currentQ = state.questions[state.currentQuestionIndex];
+    if (state.gameState === 'active') return `正在作答：第 ${state.currentQuestionIndex + 1} 題 - ${currentQ?.text}`;
+    if (state.gameState === 'reveal') return `公布答案：第 ${state.currentQuestionIndex + 1} 題`;
+    return '未知狀態';
+  };
 
   return (
     <div className="container" style={{ padding: '2rem', display: 'block', maxWidth: '800px', margin: '0 auto' }}>
       <h1 style={{ textAlign: 'left' }}>管理員後台</h1>
       
       <div className="glass-card" style={{ marginBottom: '2rem', maxWidth: '100%' }}>
-        <h2>遊戲控制</h2>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <button className="btn-primary" onClick={() => router.push('/leaderboard')} style={{ flex: 1 }}>大螢幕排行榜</button>
-          <button className="btn-primary" onClick={stopQuestion} style={{ flex: 1, background: '#6c757d' }}>停止作答 (關閉目前題目)</button>
+        <h2>遊戲流程控制 (自動化)</h2>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+          <button className="btn-primary" onClick={startGame} disabled={state.gameState !== 'waiting' && state.gameState !== 'finished'} style={{ flex: 1, background: (state.gameState !== 'waiting' && state.gameState !== 'finished') ? '#ccc' : '#28a745' }}>開始遊戲 (自動換題)</button>
+          <button className="btn-primary" onClick={stopGame} disabled={state.gameState === 'waiting'} style={{ flex: 1, background: state.gameState === 'waiting' ? '#ccc' : '#6c757d' }}>強制停止</button>
           <button className="btn-primary" onClick={resetGame} style={{ flex: 1, background: '#dc3545' }}>重置遊戲</button>
+          <button className="btn-primary" onClick={() => router.push('/leaderboard')} style={{ flex: 1 }}>大螢幕</button>
         </div>
-        <p style={{ marginTop: '1rem' }}>
-          目前題目狀態： <strong>{state.currentQuestionId ? `正在發布題目 ID: ${state.currentQuestionId}` : '等待中...'}</strong>
-        </p>
+        <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+          <p style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>目前狀態：<strong>{getStatusText()}</strong></p>
+          {(state.gameState === 'active' || state.gameState === 'reveal') && (
+            <p style={{ fontSize: '1.5rem', color: '#ff4757', fontWeight: 'bold' }}>剩餘時間：{timeLeft} 秒</p>
+          )}
+        </div>
       </div>
 
       <div className="glass-card" style={{ marginBottom: '2rem', maxWidth: '100%' }}>
@@ -76,30 +101,22 @@ export default function AdminPage() {
             <label>設定積分：</label>
             <input type="number" className="input-field" min="1" value={points} onChange={e=>setPoints(e.target.value)} style={{ width: '80px', margin: 0 }} />
           </div>
-          <button type="submit" className="btn-primary">新增題目</button>
+          <button type="submit" className="btn-primary" disabled={state.gameState !== 'waiting'}>新增題目 (遊戲中無法新增)</button>
         </form>
       </div>
 
       <div className="glass-card" style={{ maxWidth: '100%' }}>
-        <h2>題目列表</h2>
+        <h2>題目列表 (共 {state.questions.length} 題)</h2>
         {state.questions.map((q, idx) => (
-          <div key={q.id} style={{ border: '2px solid #e2e8f0', padding: '1rem', borderRadius: '12px', marginBottom: '1rem' }}>
+          <div key={q.id} style={{ border: '2px solid #e2e8f0', padding: '1rem', borderRadius: '12px', marginBottom: '1rem', opacity: state.currentQuestionIndex === idx ? 1 : 0.6 }}>
             <h3 style={{ marginBottom: '1rem' }}>{idx + 1}. {q.text} ({q.points} 分)</h3>
-            <ul style={{ paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
+            <ul style={{ paddingLeft: '1.5rem', marginBottom: '0.5rem' }}>
               {q.options.map((o, i) => (
                 <li key={i} style={{ color: i === q.answer ? '#28a745' : 'inherit', fontWeight: i === q.answer ? 'bold' : 'normal', marginBottom: '0.5rem' }}>
                   {o} {i === q.answer && ' (正確答案)'}
                 </li>
               ))}
             </ul>
-            <button 
-              className="btn-primary" 
-              onClick={() => pushQuestion(q.id)}
-              disabled={state.currentQuestionId === q.id}
-              style={{ background: state.currentQuestionId === q.id ? '#ccc' : undefined }}
-            >
-              {state.currentQuestionId === q.id ? '目前發布中' : '發布此題給賓客'}
-            </button>
           </div>
         ))}
       </div>
