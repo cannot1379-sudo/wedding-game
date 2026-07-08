@@ -77,7 +77,7 @@ function BadmintonNet() {
 
 export default function GamePage() {
   const { state, dispatch } = useStore();
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const router = useRouter();
 
   const [timeLeft, setTimeLeft] = useState(0);
@@ -129,7 +129,13 @@ export default function GamePage() {
   return (
     <div className="container">
       <BadmintonNet />
-      <div className="glass-card" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+      <div className="glass-card" style={{ textAlign: 'center', marginBottom: '2rem', position: 'relative' }}>
+        <button 
+          onClick={logout}
+          style={{ position: 'absolute', right: '1rem', top: '1rem', background: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}
+        >
+          登出 / 換名字
+        </button>
         <h2>嗨，{user.name}！ 💖</h2>
         <p style={{ fontSize: '1.2rem', color: 'var(--primary)', fontWeight: 'bold', marginTop: '0.5rem' }}>目前總積分：{myScore} 分 🏆</p>
       </div>
