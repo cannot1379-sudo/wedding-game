@@ -25,14 +25,14 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/wedding-game .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/wedding-game
+          docker build -t gcr.io/wedding-game-prod-999/wedding-game .
+          docker push gcr.io/wedding-game-prod-999/wedding-game
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy wedding-game \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/wedding-game \
+            --image gcr.io/wedding-game-prod-999/wedding-game \
             --platform managed \
             --region asia-east1 \
             --allow-unauthenticated \
-            --set-env-vars NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }},NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }},NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }},NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }},NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }},NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}
+            --set-env-vars NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCw0lbsV5w7j_JlgQhuXd8cVsrnBvy-aic,NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=wedding-game-prod-999.firebaseapp.com,NEXT_PUBLIC_FIREBASE_PROJECT_ID=wedding-game-prod-999,NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=wedding-game-prod-999.firebasestorage.app,NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=50918202904,NEXT_PUBLIC_FIREBASE_APP_ID=1:50918202904:web:7150dfd24232c7765a2d6d
