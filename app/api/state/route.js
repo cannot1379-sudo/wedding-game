@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { db as firebaseDb } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
